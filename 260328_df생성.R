@@ -5,10 +5,10 @@ idx_01<-c(
   1:500
   )
 address_01<-sample(
-  c("수정구","분당구","중원구"),size=500,replace=TRUE
+  c("수정구","분당구","중원구"),size=length(idx_01),replace=TRUE
   )
 income_01<-sample(
-  c(240:500),size=500,replace=TRUE
+  c(240:500),size=length(idx_01),replace=TRUE
   )
 
 df_01<-data.frame(
