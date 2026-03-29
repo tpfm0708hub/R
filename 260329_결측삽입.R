@@ -1,6 +1,5 @@
 rm(list=ls())
 library(dplyr)
-library(stringr)
 
 # seed값 설정 위치 변경
 set.seed(1234)
