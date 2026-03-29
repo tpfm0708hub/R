@@ -2,6 +2,9 @@ rm(list=ls())
 library(dplyr)
 library(stringr)
 
+# seed값 설정 위치 변경
+set.seed(1234)
+
 #  임의의 표본 500개 생성
 idx_01<-c(
   1:500
@@ -18,9 +21,6 @@ income_01<-sample(
 df_01<-data.frame(
   순번=idx_01,주소=address_01,수입=income_01
   )
-
-# seed값 설정
-set.seed(1234)
 
 df_02<-df_01%>%mutate(
   # 주소: 25개 행(500*5%)에 결측 삽입
