@@ -81,5 +81,7 @@ head(df_06)
 #5   11 분당구  470 여성      11
 #6   12 분당구  403 남성      12
 
+library(readr)
+
 # 조건설정 전 df_05에 대해 rds 형식으로 저장
-write_rds(df_06,file.path('d:/github/260403_파일출력.R'))
+write_rds(df_05,file.path('d:/github/260403_파일출력.R'))
