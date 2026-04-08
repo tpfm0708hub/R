@@ -1,0 +1,8 @@
+# 활용자료: "국민건강영양조사 원시자료(2024년) -	검진조사, 건강설문조사, 영양조사", 최종 수정일: 2026-02-27
+# URL: https://knhanes.kdca.go.kr/knhanes/rawDataDwnld/rawDataDwnld.do
+
+library(dplyr)
+library(haven)
+
+# 2024 국민건강영양조사 sas 불러오기
+df_001<-read_sas("D:/github/hn24_all.sas7bdat")
