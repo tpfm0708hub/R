@@ -1,0 +1,21 @@
+# 활용자료: "국민건강영양조사 원시자료(2024년) -	검진조사, 건강설문조사, 영양조사", 최종 수정일: 2026-02-27
+# URL: https://knhanes.kdca.go.kr/knhanes/rawDataDwnld/rawDataDwnld.do
+
+library(dplyr)
+library(haven)
+
+# 2024 국민건강영양조사 sas 불러오기
+df_001 <- read_sas("D:/github/hn24_all.sas7bdat")
+
+# 공간 생성하여 열 이름 저장
+col_names <- tibble(col_01=names(df_001))
+
+# 열이름 'sex'(성별) 및 'region'(시도)를 col_idx_01로 지정
+col_idx_01 <- c('sex', 'region')
+
+# 전체 열 이름 중, col_idx_01에 해당하는 열 이름 출력
+col_idx_02 <- col_names %>% filter(col_01 %in% col_idx_01) %>% pull(.)
+
+# 전체 데이터 중, 지정한 열에 해당하는 데이터 분리
+df_002 <- df_001 %>% select(col_idx_02)
+df_002 <- df_001 %>% select(col_idx_02[2])
