@@ -8,4 +8,4 @@ library(haven)
 df_001<-read_sas("D:/github/hn24_all.sas7bdat")
 
 # 공간 생성하여 열 이름 저장
-col_names<-tibble('열이름'=names(df_001))
+col_names<-tibble(col_01 = names(df_001))
