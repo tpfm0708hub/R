@@ -1,0 +1,73 @@
+# 활용자료: "국민건강영양조사 원시자료(2024년) -	검진조사, 건강설문조사, 영양조사", 최종 수정일: 2026-02-27
+# URL: https://knhanes.kdca.go.kr/knhanes/rawDataDwnld/rawDataDwnld.do
+
+library(dplyr)
+library(haven)
+
+# 2024 국민건강영양조사 sas 불러오기
+df_001 <- read_sas("D:/github/hn24_all.sas7bdat")
+
+# 공간 생성하여 열 이름 저장
+col_names <- tibble(col_01=names(df_001))
+
+# 열이름 'sex'(성별) 및 'region'(시도)를 col_idx_01로 지정
+col_idx_01 <- c('sex', 'region')
+
+# 전체 열 이름 중, col_idx_01에 해당하는 열 이름 출력
+col_idx_02 <- col_names %>% filter(col_01 %in% col_idx_01) %>% 
+              arrange(match(col_01, col_idx_01)) %>% pull(.)
+
+# 전체 데이터 중, 지정한 열에 해당하는 데이터 분리
+df_002 <- df_001 %>% select(col_idx_02[1],col_idx_02[2])
+df_002 <- df_001 %>% select(col_idx_02[2])
+
+# 분석열 추가
+# sex: 성별, age: 연령, ho_incm5: 소득 5분위수(가구), marri_2: 결혼상태,
+# # 활용자료: "국민건강영양조사 원시자료(2024년) -	검진조사, 건강설문조사, 영양조사", 최종 수정일: 2026-02-27
+# URL: https://knhanes.kdca.go.kr/knhanes/rawDataDwnld/rawDataDwnld.do
+
+library(dplyr)
+library(haven)
+
+# 2024 국민건강영양조사 sas 불러오기
+df_001 <- read_sas("D:/github/hn24_all.sas7bdat")
+
+# 공간 생성하여 열 이름 저장
+col_names <- tibble(col_01=names(df_001))
+
+# 열이름 'sex'(성별) 및 'region'(시도)를 col_idx_01로 지정
+col_idx_01 <- c('sex', 'region')
+
+# 전체 열 이름 중, col_idx_01에 해당하는 열 이름 출력
+col_idx_02 <- col_names %>% filter(col_01 %in% col_idx_01) %>% 
+  arrange(match(col_01, col_idx_01)) %>% pull(.)
+
+# 전체 데이터 중, 지정한 열에 해당하는 데이터 분리
+df_002 <- df_001 %>% select(col_idx_02[1],col_idx_02[2])
+df_002 <- df_001 %>% select(col_idx_02[2])
+
+# 분석열 추가
+# sex: 성별, age: 연령, ainc: 월평균가구총소득, marri_2: 결혼상태,
+# region: 17개 시도, town_t: 동/읍면 구분
+col_idx_01 <- c('sex', 'age', 'ainc_1', 'marri_2', 'region', 'town_t')
+
+col_idx_02 <- col_names %>% filter(col_01 %in% col_idx_01) %>% 
+              arrange(match(col_01, col_idx_01)) %>% pull(.)
+
+# 해당하는 데이터 생성
+df_002 <- df_001 %>% select(col_idx_02)
+
+# 생성 확인
+print(head(df_002))
+#sex   age ainc_1 marri_2 region town_t
+#<dbl> <dbl>  <dbl>   <dbl>  <dbl>  <dbl>
+#1     1    38   7360       1      1      1
+#2     2    34   7360       1      1      1
+#3     1     6   7360      88      1      1
+#4     1     6   7360      88      1      1
+#5     2     4   7360      88      1      1
+#6     2    80     70       4      1      1
+
+# 첫번째 변수('sex') 빈도 확인
+# .data[[ ]]: 문자열 이름 동적으로 참조
+df_002 %>% group_by(.data[[col_idx_02[1]]]) %>% summarise(n=n())
