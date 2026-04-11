@@ -14,8 +14,9 @@ col_names <- tibble(col_01=names(df_001))
 col_idx_01 <- c('sex', 'region')
 
 # 전체 열 이름 중, col_idx_01에 해당하는 열 이름 출력
-col_idx_02 <- col_names %>% filter(col_01 %in% col_idx_01) %>% pull(.)
+col_idx_02 <- col_names %>% filter(col_01 %in% col_idx_01) %>% 
+              arrange(match(col_01, col_idx_01)) %>% pull(.)
 
 # 전체 데이터 중, 지정한 열에 해당하는 데이터 분리
-df_002 <- df_001 %>% select(col_idx_02)
+df_002 <- df_001 %>% select(col_idx_02[1],col_idx_02[2])
 df_002 <- df_001 %>% select(col_idx_02[2])
