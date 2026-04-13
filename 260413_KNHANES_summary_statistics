@@ -40,7 +40,6 @@ df_002 <- df_002 %>% mutate(
   )
 
 # 결과 확인
-
 df_002 %>% pull(ainc_1) %>% describe(.)
 #vars    n    mean      sd median trimmed     mad min   max range skew kurtosis    se
 #X1    1 6952 5837.47 5007.62   5022  5233.9 5805.86  17 18000 17983 0.79     -0.2 60.06
