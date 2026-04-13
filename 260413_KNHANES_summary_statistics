@@ -19,6 +19,12 @@ col_idx_02 <- col_names %>% filter(col_01 %in% col_idx_01) %>%
 # 해당하는 데이터 생성
 df_002 <- df_001 %>% select(col_idx_02)
 
+#  'marri_2' 결측 처
+df_002 <- df_002 %>% mutate(
+  marri_2 = ifelse(
+    marri_2 == 99|marri_2 == 8, NA, marri_2
+  ))
+
 # 세번째 변수('ainc_1') 요약 통계
 library(psych)
 
