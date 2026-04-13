@@ -1,0 +1,47 @@
+# # 활용자료: "국민건강영양조사 원시자료(2024년) -	검진조사, 건강설문조사, 영양조사", 최종 수정일: 2026-02-27
+# URL: https://knhanes.kdca.go.kr/knhanes/rawDataDwnld/rawDataDwnld.do
+library(dplyr)
+library(haven)
+
+# 2024 국민건강영양조사 sas 불러오기
+df_001 <- read_sas("D:/github/hn24_all.sas7bdat")
+
+# 공간 생성하여 열 이름 저장
+col_names <- tibble(col_01=names(df_001))
+
+# sex: 성별, age: 연령, ainc: 월평균가구총소득, marri_2: 결혼상태,
+# region: 17개 시도, town_t: 동/읍면 구분
+col_idx_01 <- c('sex', 'age', 'ainc_1', 'marri_2', 'region', 'town_t')
+
+col_idx_02 <- col_names %>% filter(col_01 %in% col_idx_01) %>% 
+  arrange(match(col_01, col_idx_01)) %>% pull(.)
+
+# 해당하는 데이터 생성
+df_002 <- df_001 %>% select(col_idx_02)
+
+# 세번째 변수('ainc_1') 요약 통계
+library(psych)
+
+df_002 %>% pull(ainc_1) %>% describe(.)
+# 출력 결과
+#vars    n     mean       sd median trimmed     mad min    max  range  skew kurtosis    se
+#X1    1 6996 12090.06 78757.79 5087.5 5295.56 5800.67  17 999999 999982 12.41    152.7 941.6
+
+# 이용지침서 기준: 999999. 모름·무응답
+# '무응답' 및 '무응답' 결측 처리
+df_002 <- df_002 %>% mutate(
+  ainc_1 = ifelse(ainc_1 == 999999, NA, ainc_1)
+  )
+
+# 결과 확인
+
+df_002 %>% pull(ainc_1) %>% describe(.)
+#vars    n    mean      sd median trimmed     mad min   max range skew kurtosis    se
+#X1    1 6952 5837.47 5007.62   5022  5233.9 5805.86  17 18000 17983 0.79     -0.2 60.06
+# 이용지침서 기준 최댓값: '18000' 연 1억8천만원이상
+# 관측 행: 6952
+
+# 전체행 - 결측행
+sum(!is.na(df_002$ainc_1))
+# 출력 결과
+#[1] 6952
