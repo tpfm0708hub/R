@@ -9,7 +9,7 @@ df_001 <- read_sas("D:/github/hn24_all.sas7bdat")
 # 공간 생성하여 열 이름 저장
 col_names <- tibble(col_01=names(df_001))
 
-# sex: 성별, age: 연령, ainc: 월평균가구총소득, marri_2: 결혼상태,
+# sex: 성별, age: 연령, ainc_1: 월평균가구총소득, marri_2: 결혼상태,
 # region: 17개 시도, town_t: 동/읍면 구분
 col_idx_01 <- c('sex', 'age', 'ainc_1', 'marri_2', 'region', 'town_t')
 
