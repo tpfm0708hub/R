@@ -26,6 +26,11 @@ df_002 <- df_002 %>% mutate(
     marri_2 == 99|marri_2 == 8, NA, marri_2
   ))
 
+# 'marri_2' 결측 처리
+df_002 <- df_002 %>% mutate(
+  marri_2 = ifelse(marri_2 == 88, NA, marri_2)
+)
+
 # 'ainc_1' 결측 처리
 df_002 <- df_002 %>% mutate(
   ainc_1 = ifelse(ainc_1 == 999999, NA, ainc_1)
@@ -36,14 +41,14 @@ col_adj_01 <- function(db_01, col_01){
   tbl_001 <- db_01 %>% group_by(.data[[col_01]]) %>% summarise(n=n())
   tbl_002 <- tbl_001 %>% mutate(per = paste0(round(n /sum(tbl_001[2]), 4) * 100, '%'))
   tbl_003 <- tibble('구분' = '합계', n = sum(tbl_001$n), per = '100%') %>%
-             setNames(c(col_01, 'n', 'per'))
+    setNames(c(col_01, 'n', 'per'))
   tbl_004 <- rbind(tbl_002, tbl_003)
   
   tbl_005 <- tbl_004 %>% mutate(
     fmt = paste0(n, '(', per, ')')
   ) %>% select(1, 4)
   return(tbl_005)
-  }
+}
 
 # 함수 적용
 tbl_01 <- col_adj_01(df_002, 'sex')
@@ -63,9 +68,8 @@ print(tbl_01);print(tbl_02);print(tbl_03);print(tbl_04)
 #2 2       53(0.76%)   
 #3 3       559(7.99%)  
 #4 4       370(5.29%)  
-#5 88      2110(30.16%)
-#6 NA      19(0.27%)   
-#7 합계    6997(100%)  
+#5 NA      2129(30.43%)
+#6 합계    6997(100%)  
 #region fmt         
 #1 1      1276(18.24%)
 #2 2      468(6.69%)  
