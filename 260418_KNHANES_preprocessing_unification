@@ -51,8 +51,8 @@ tbl_02 <- col_adj_01(df_002, col_idx_01[4])
 tbl_03 <- col_adj_01(df_002, col_idx_01[5])
 tbl_04 <- col_adj_01(df_002, col_idx_01[6])
 
-# 범주형 처리: '성별', '결혼상태', '17개 시도', '동/읍면 구분'
-df_003 <- df_002 %>% mutate(across(c(col_idx_01[1], col_idx_01[4], col_idx_01[5], col_idx_01[6]), ~as.factor(.)))
+# 범주형 처리: '성별', '동/읍면 구분'
+df_003 <- df_002 %>% mutate(across(c(col_idx_01[1], col_idx_01[6]), ~as.factor(.)))
 
 # adj_01: region을 경인지역 여부에 따라 구분(0: 경인, 1: 그외)
 # region 변수별 빈도 분포(국민건강영양조사 이용지침서中)
