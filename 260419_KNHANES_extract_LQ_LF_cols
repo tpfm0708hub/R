@@ -64,6 +64,10 @@ df_003 <- cbind(df_003, adj_001)
 
 library(stringr)
 # "노인생활기능척도"(LQ_LF1-10) 데이터 추출
+print(colnames(df_001)[str_detect(colnames(df_001),'LQ_LF')])
+# 출력 결과
+# [1] "LQ_LF1"  "LQ_LF2"  "LQ_LF3"  "LQ_LF4"  "LQ_LF5"  "LQ_LF6"  "LQ_LF7"  "LQ_LF8"  "LQ_LF9"  "LQ_LF10" "LQ_LF_S"
+# 11번째, 노인생활기능척도 점수 제거거
 ext_col_01 <- colnames(df_001)[str_detect(colnames(df_001),'LQ_LF')][-11]
 ext_col_02 <- df_001[ext_col_01]
 
