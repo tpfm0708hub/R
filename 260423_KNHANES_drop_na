@@ -94,7 +94,7 @@ df_007 %>% mutate(across(everything(), ~sum(is.na(.))))
 library(tidyr)
 fit_001 <- df_007 %>% drop_na()
 
-#열 비교
+# 행 갯수 비교
 print(nrow(df_007));print(nrow(fit_001))
 # 출력 결과
 #[1] 1951
