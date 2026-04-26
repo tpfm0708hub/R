@@ -95,7 +95,7 @@ library(tidyr)
 fit_001 <- df_007 %>% drop_na()
 
 # marri_2 더미열 생성
-col_001 <- model.matrix(~factor(marri_2) -1, data=fit_001)
+col_001 <- model.matrix(~factor(marri_2), data=fit_001)
 
 # 더미열 병합
 fit_002 <- cbind(fit_001, col_001) %>% select(-marri_2) 
