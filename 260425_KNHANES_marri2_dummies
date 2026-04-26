@@ -98,7 +98,7 @@ fit_001 <- df_007 %>% drop_na()
 col_001 <- model.matrix(~factor(marri_2), data=fit_001)
 
 # 더미열 병합
-fit_002 <- cbind(fit_001, col_001) %>% select(-marri_2) 
+fit_002 <- cbind(fit_001, col_001[, -1]) %>% select(-marri_2) 
 
 # 더미열 열이름 부여
 colnames(fit_002)[colnames(fit_002) %in% colnames(fit_002)[str_detect(colnames(fit_002), 'factor')]] <-
