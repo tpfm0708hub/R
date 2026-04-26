@@ -66,7 +66,7 @@ library(stringr)
 # "노인생활기능척도"(LQ_LF1-10) 데이터 추출
 print(colnames(df_001)[str_detect(colnames(df_001),'LQ_LF')])
 
-ext_col_01 <- colnames(df_001)[str_detect(colnames(df_001),'LQ_LF')]#[-11]
+ext_col_01 <- colnames(df_001)[str_detect(colnames(df_001),'LQ_LF')][-11]
 ext_col_02 <- df_001[ext_col_01]
 
 # 기존 데이터와 병합
