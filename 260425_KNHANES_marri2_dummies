@@ -94,7 +94,7 @@ df_007 %>% mutate(across(everything(), ~sum(is.na(.))))
 library(tidyr)
 fit_001 <- df_007 %>% drop_na()
 
-# marri_2 더미열 생성
+# marri_2 더미열 생성(기준열: 유배우자, 동거)
 col_001 <- model.matrix(~factor(marri_2), data=fit_001)
 
 # 더미열 병합
