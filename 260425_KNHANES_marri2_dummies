@@ -113,5 +113,4 @@ colnames(fit_002)[colnames(fit_002) %in% colnames(fit_002)[str_detect(colnames(f
 print(colnames(fit_002))
 #[1] "sex"             "age"             "ainc_1"          "region"          "town_t"          "region_01"       "LQ_LF1"         
 #[8] "LQ_LF2"          "LQ_LF3"          "LQ_LF4"          "LQ_LF5"          "LQ_LF6"          "LQ_LF7"          "LQ_LF8"         
-#[15] "LQ_LF9"          "LQ_LF10"         "LQ_LF_S"         "결혼상태_동거"   "결혼상태_별거"   "결혼상태_사별"   "결혼상태_이혼"  
-#[22] "결혼상태_무응답"
+#[15] "LQ_LF9"          "LQ_LF10"         "결혼상태_별거"   "결혼상태_사별"   "결혼상태_이혼"   "결혼상태_무응답"
