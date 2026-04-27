@@ -116,7 +116,7 @@ library(car)
 form_01 <- formula(paste('LQ_LF_S', '~', paste(setdiff(colnames(fit_003), 'LQ_LF_S'), collapse = '+')))
   check_01 <- lm(form_01, data=fit_003)
 
-# 다중공산성 확인
+# 다중공선성 확인
 vif(check_01)
 # 출력 결과
 #sex             age          ainc_1          town_t       region_01   결혼상태_별거   결혼상태_사별   결혼상태_이혼 
