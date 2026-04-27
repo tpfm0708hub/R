@@ -125,6 +125,8 @@ library(psych)
 cor_001 <- fit_003 %>% mutate(across(everything(), as.numeric))
 cor_002 <- corr.test(cor_001)
 
+# cor_002$r['LQ_LF_S',]: 상관계수 확인
+# cor_002$p['LQ_LF_S',]: p-value 확인
 cor_002$r['LQ_LF_S',];cor_002$p['LQ_LF_S',]
 # 결혼상태_별거(0.3989) 및 결혼상태_무응답(0.7232)의 상관관계가 유의하지 않은 것으로 확인.
 # 출력 결과
