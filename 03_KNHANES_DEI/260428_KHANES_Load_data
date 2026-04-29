@@ -21,4 +21,4 @@ df_001<-foreach(f=df_list_01, .combine=bind_rows, .packages=c('dplyr', 'haven'))
   return(df)}
 
 # 병렬처리 클러스터 종료
-stropCluster(cl)
+stopCluster(cl)
