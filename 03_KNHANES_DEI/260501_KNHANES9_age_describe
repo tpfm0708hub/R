@@ -1,0 +1,34 @@
+rm(list=ls())
+library(fs)# dir_ls()
+library(dplyr)
+library(haven)
+library(doParallel)#  foreach()
+# 활용자료: "국민건강영양조사 제9기(2022-2024)
+# URL: https://knhanes.kdca.go.kr/knhanes/rawDataDwnld/rawDataDwnld.do
+
+# 병렬처리 코어 설정
+cl <- makeCluster(parallel::detectCores()-1)
+registerDoParallel(cl)
+
+# 데이터 폴더 경로 설정
+path_001<-'D:/github'
+# 경로 내 hn으로 시작하는 SAS 파일 목록 추출
+df_list_01<-dir_ls(path_001, regexp="hn.*\\.sas7bdat$")
+
+# 해당 SAS 파일을 병렬로 불러온 뒤 결합
+df_001<-foreach(f=df_list_01, .combine=bind_rows, .packages=c('dplyr', 'haven'))%dopar%{
+  df<-read_sas(f)
+  return(df)}
+
+# 병렬처리 클러스터 종료
+stopCluster(cl)
+
+# 당뇨병 의사진단 여부(DE1_dg) 없음(0), 있음(1) 외 제거  
+df_002 <- df_001 %>% filter(DE1_dg %in% c(0, 1))
+
+# 연령 분포 확인
+library(psych)
+df_002 %>% select(age) %>% describe(.)
+# 출력 결과
+#vars     n  mean    sd median trimmed   mad min max range  skew kurtosis   se
+#age    1 17255 53.84 16.99     55   54.44 19.27  19  80    61 -0.26    -0.97 0.13
