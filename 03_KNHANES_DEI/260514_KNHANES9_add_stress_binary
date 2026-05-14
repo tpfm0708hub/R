@@ -1,0 +1,226 @@
+rm(list=ls())
+library(fs)# dir_ls()
+library(dplyr)
+library(haven)
+library(doParallel)#  foreach()
+library(psych)# describe()
+library(formattable)# comma()
+# 활용자료: "국민건강영양조사 제9기(2022-2024)
+# URL: https://knhanes.kdca.go.kr/knhanes/rawDataDwnld/rawDataDwnld.do
+
+# 병렬처리 코어 설정
+cl <- makeCluster(parallel::detectCores()-1)
+registerDoParallel(cl)
+
+# 데이터 폴더 경로 설정
+path_001<-'D:/github'
+# 경로 내 hn으로 시작하는 SAS 파일 목록 추출
+df_list_01<-dir_ls(path_001, regexp="hn.*\\.sas7bdat$")
+
+# 해당 SAS 파일을 병렬로 불러온 뒤 결합
+df_001<-foreach(f=df_list_01, .combine=bind_rows, .packages=c('dplyr', 'haven'))%dopar%{
+  df<-read_sas(f)
+  return(df)}
+
+# 병렬처리 클러스터 종료
+stopCluster(cl)
+
+# 당뇨병 의사진단 여부(DE1_dg) 없음(0), 있음(1) 외 제거  
+df_002 <- df_001 %>% filter(DE1_dg %in% c(0, 1))
+
+# 연령 분포 확인
+#df_002 %>% select(age) %>% describe(.)
+
+# 노인 외 65세 미만 집단 추출
+df_003 <- df_002 %>% filter(age < 65)
+
+# 노인 제외 전후 표본 수 변화 확인
+#print(
+#  paste0('노인제외 전 표본수 : ', comma(nrow(df_002),digits=0), '명 / ',
+#         '노인제외 후 표본수 : ', comma(nrow(df_003),digits=0), '명')
+#)
+
+# 'age'(연령) 분포 재확인
+#print(df_003 %>% select(age) %>% describe(.))
+
+# 'sex'(성별) 빈도 확인
+#df_003 %>% group_by(sex) %>% summarise(n=n())
+
+# 'edu'(교육수준) 빈도 확인
+#df_003 %>% count(edu)
+
+# 'edu' 변수 결측치(NA) 제거
+df_003 <- df_003 %>% filter(!is.na(edu))
+
+# 'marri_1'(결혼여부) 빈도  확인
+#df_003 %>% count(marri_1)
+
+# 'edu' 변수 이분형 범주로 재조정 후 edu_binary 변수 생성
+# 0 = 고졸이하, 1 = 대졸이상
+df_003 <- df_003 %>% mutate(
+  edu_binary = if_else(edu != 4, 0, 1)
+)
+
+# 'town_t'(동/읍면 구분) 빈도 확인
+#df_003 %>% count(town_t)
+
+# 'EC1_1'(경제활동 상태) 빈도 확인
+#df_003 %>% count(EC1_1)
+
+# 'EC1_1' 변수 '모름, 무응답'(9) 제거
+df_003 <- df_003 %>% filter(EC1_1 != 9)
+
+# 'ainc'(월평균 가구총소득) 분포 확인
+#df_003 %>% pull(ainc) %>% describe(.)
+
+# 'ainc' 변수 결측 제거
+df_003 <- df_003 %>% filter(!is.na(ainc))
+
+# 월평균 가구총소득 중위소득 설정
+ainc_mid <- median(df_003$ainc); print(ainc_mid)
+# 출력 결과
+# 566.6667
+
+# 'ainc' 변수 이분형 범주로 재조정 후 ainc_binary 변수 생성
+# 0 = 중위소득 미만, 1 = 중위소득 이상
+df_003 <- df_003 %>% mutate(
+  ainc_binary = if_else(ainc >= ainc_mid, 1, 0)
+)
+
+# ainc_binary 빈도 확인
+#df_003 %>% count(ainc_binary)
+
+# BS3_1(현재 궐련형 일반담배 흡연여부) 빈도 확인
+#df_003 %>% count(BS3_1)
+
+# BS12_47(현재 궐련형 전자담배 사용여부) 빈도 확인
+#df_003 %>% count(BS12_47)
+
+# BS3_1 및 BS12_47 결측 제거
+df_003 <- df_003 %>% filter(BS3_1 != 9 & BS12_47 != 9)
+
+# smoker(흡연자) 변수 생성(0: 비흡연자, 1: 흡연자)
+# 기준: BS3_1 및 BS12_47 1(매일피움) 및 2(가끔피움) 응답자 합산
+df_003 <- df_003 %>% mutate(
+  smoker = ifelse(BS3_1 %in% c(1, 2) | BS12_47 %in% c(1, 2), 1, 0)
+)
+
+# smoker(흡연자) 빈도 확인
+#df_003 %>% count(smoker)
+
+# BD1_11(1년간 음주빈도) 빈도 확인
+#df_003 %>% count(BD1_11)
+
+# BD2_1(한 번에 마시는 음주량) 빈도 확인
+#df_003 %>% count(BD2_1)
+
+# dr_high(고위험음주여부) 변수 생성(0: 비해당, 1: 해당)
+# 지표정의: 1회 평균 음주량(남자: 7잔이상, 여자: 5잔 이상) + 주 2회이상 음주하는 분율
+# 지표생성 활용자료: "국민건강영양조사 제9기(2022-2024)
+df_003 <- df_003 %>% mutate(
+  dr_high = ifelse((sex == 1 & BD1_11 %in% c(5, 6) & BD2_1 %in% c(4, 5))|
+                     (sex == 2 & BD1_11 %in% c(5, 6) & BD2_1 %in% c(3, 4, 5)), 1, 0)
+) 
+
+# dr_high(고위험음주여부) 빈도 확인
+#df_003 %>% count(dr_high)
+
+# BE3_71(고강도 신체활동 여부: 일) 빈도 확인
+#df_003 %>% count(BE3_71)
+
+# BE3_71(고강도 신체활동 여부: 일) 결측 제거
+df_003 <- df_003 %>% filter(BE3_71 != 9)
+
+# BE3_72(고강도 신체활동 일수: 일) 빈도 확인
+#df_003 %>% count(BE3_72)
+
+# BE3_81(중강도 신체활동 여부: 일) 빈도 확인
+#df_003 %>% count(BE3_81)
+
+# BE3_82(중강도 신체활동 일수: 일) 빈도 확인
+#df_003 %>% count(BE3_82)
+
+# BE3_75(고강도 신체활동 여부: 여가) 빈도 확인
+#df_003 %>% count(BE3_75)
+
+# BE3_75(고강도 신체활동 여부: 여가) 결측 제거
+df_003 <- df_003 %>% filter(BE3_71 != 9)
+
+# BE3_82(고강도 신체활동 일수: 여가) 빈도 확인
+#df_003 %>% count(BE3_76)
+
+# BE3_76(고강도 신체활동 일수: 여가) 결측 제거
+df_003 <- df_003 %>% filter(BE3_76 != 9)
+
+# BE3_85(중강도 신체활동 여부: 여가) 빈도 확인
+#df_003 %>% count(BE3_85)
+
+# BE3_86(중강도 신체활동 일수: 여가) 빈도 확인
+#df_003 %>% count(BE3_86)
+
+# BE3_91(신체활동 여부: 장소이동) 빈도 확인
+#df_003 %>% count(BE3_91)
+
+# BE3_92(신체활동 일수: 장소이동) 빈도 확인
+#df_003 %>% count(BE3_92)
+
+# BE3_92(신체활동 일수: 장소이동) 결측 제거
+df_003 <- df_003 %>% filter(BE3_92 != 9)
+
+# pa_aerobic(유산소신체활동여부) 변수 생성(0: 비해당, 1: 해당)
+# 지표 정의(다음 중 하나 해당)
+# 일주일에 중강도 신체활동: 2시간30분 이상
+# 고강도 신체활동: 1시간 15분 이상 
+# 중강도와 고강도 신체활동 섞은 시간(고강도 1분은중강도 2분) 상응
+# 지표생성 활용자료: "국민건강영양조사 제9기(2022-2024)
+df_003 <- df_003 %>% mutate(
+  dr_high = ifelse((sex == 1 & BD1_11 %in% c(5, 6) & BD2_1 %in% c(4, 5))|
+                   (sex == 2 & BD1_11 %in% c(5, 6) & BD2_1 %in% c(3, 4, 5)), 1, 0)
+) 
+
+# BP1(평소 스트레스 인지 정도) 빈도 확인
+df_003 %>% count(BP1)
+#    BP1     n
+#  <dbl> <int>
+#1     1   569
+#2     2  2525
+#3     3  6250
+#4     4  1504
+
+# 'BP1' 변수 이분형 범주로 재조정 후 BP1_binary 변수 생성
+# 0 = 적게인지, 1 = 많이인지
+df_003 <- df_003 %>% mutate(
+  BP1_binary = ifelse(BP1 >= 3, 0, 1)
+  )
+
+# 분석용 데이터프레임 생성('연령' 및 '성별', '교육수준_이분형', 
+# '결혼여부', '동/읍면 구분', '경제활동 상태', '월평균 가구총소득', 
+# '흡연자', '고위험음주여부', '스트레스인지_이분형', 당뇨병 의사진단 여부')
+df_004 <- df_003 %>% select(age, sex, edu_binary, marri_1, town_t, EC1_1, ainc_binary, 
+                            smoker, dr_high, BP1_binary, DE1_dg)
+
+# 각 변수에 범주명 부여
+# 참고자료: 국민건강영양조사 제9기(2022-2024) 원시자료 이용지침서
+df_fit_001 <- df_004 %>% mutate(
+  sex = factor(sex, levels = c(1, 2), labels = c('남자', '여자')),
+  edu_binary = factor(edu_binary, levels = c(0, 1), labels = c('고졸이하', '대졸이상')),
+  marri_1 = factor(marri_1, levels = c(1, 2), labels = c('기혼', '미혼')),
+  town_t = factor(town_t, levels = c(1, 2), labels = c('동', '읍·면')),
+  EC1_1 = factor(EC1_1, levels = c(1, 2), labels = c('예', '아니요')),
+  ainc_binary = factor(ainc_binary, levels = c(0, 1), labels = c('미만', '이상')),
+  smoker = factor(smoker, levels = c(0, 1), labels = c('비흡연자', '흡연자')),
+  dr_high = factor(dr_high, levels = c(0, 1), labels = c('정상군', '고위험군')),
+  BP1_binary = factor(BP1_binary, levels = c(0, 1), labels= c('적게인지', '많이인지')),
+  DE1_dg = factor(DE1_dg, levels = c(0, 1), labels = c('없음', '있음'))
+) %>% rename(
+  성별 = sex,
+  교육수준 = edu_binary,
+  결혼여부 = marri_1,
+  거주지역 = town_t,
+  경제활동상태 = EC1_1,
+  중위가구소득 = ainc_binary,
+  흡연자 = smoker,
+  고위험음주여부 = dr_high,
+  스트레스인지 = BP1_binary,
+  당뇨병의사진단여부 = DE1_dg
+)
