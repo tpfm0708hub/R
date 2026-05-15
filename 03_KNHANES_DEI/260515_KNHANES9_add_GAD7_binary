@@ -245,13 +245,13 @@ df_003 %>% count(BP_GAD_7)
 
 # GAD-7 점수(mh_GAD_S) 변수 생성
 # GAD-7 점수 이분형 범주로 재조정 후 GAD_binary 변수 생성
-# (이번 연구에서는 4점 이상을 위험군으로 정의)
-# 0 = 양호(3점 이하), 1 = 위험(4점 이상)
+# (이번 연구에서는 6점 이상을 위험군으로 정의)
+# 0 = 양호(5점 이하), 1 = 위험(6점 이상)
 df_003 <- df_003 %>% mutate(
   mh_GAD_S = BP_GAD_1 + BP_GAD_2 + BP_GAD_3 + 
              BP_GAD_4 + BP_GAD_5 + BP_GAD_6 + 
              BP_GAD_7,
-  mh_GAD_binary = if_else(mh_GAD_S < 4, 0, 1)
+  mh_GAD_binary = if_else(mh_GAD_S < 6, 0, 1)
   )
 
 # 분석용 데이터프레임 생성('연령' 및 '성별', '교육수준_이분형', 
