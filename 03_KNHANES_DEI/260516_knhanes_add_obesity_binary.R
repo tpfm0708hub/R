@@ -240,7 +240,7 @@ df_003 %>% count(obesity_binary)
 # 분석용 데이터프레임 생성('연령' 및 '성별', '교육수준_이분형', 
 # '결혼여부', '동/읍면 구분', '경제활동 상태', '월평균 가구총소득', 
 # '흡연자', '고위험음주여부', '스트레스인지_이분형', 'GAD_이분형', 
-# '비만전단계여부', '당뇨병 의사진단 여부')
+# '비만여부', '당뇨병 의사진단 여부')
 df_004 <- df_003 %>% select(age, sex, edu_binary, marri_1, town_t, EC1_1, ainc_binary, 
                             smoker, dr_high, BP1_binary, mh_GAD_binary, obesity_binary, DE1_dg)
 
