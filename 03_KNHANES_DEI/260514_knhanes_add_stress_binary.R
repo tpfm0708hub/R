@@ -174,7 +174,7 @@ df_003 <- df_003 %>% filter(BE3_92 != 9)
 # 중강도와 고강도 신체활동 섞은 시간(고강도 1분은중강도 2분) 상응
 # 지표생성 활용자료: "국민건강영양조사 제9기(2022-2024)
 df_003 <- df_003 %>% mutate(
-  dr_high = ifelse((sex == 1 & BD1_11 %in% c(5, 6) & BD2_1 %in% c(4, 5))|
+  pa_aerobic = ifelse((sex == 1 & BD1_11 %in% c(5, 6) & BD2_1 %in% c(4, 5))|
                      (sex == 2 & BD1_11 %in% c(5, 6) & BD2_1 %in% c(3, 4, 5)), 1, 0)
 ) 
 
@@ -195,7 +195,8 @@ df_003 <- df_003 %>% mutate(
 
 # 분석용 데이터프레임 생성('연령' 및 '성별', '교육수준_이분형', 
 # '결혼여부', '동/읍면 구분', '경제활동 상태', '월평균 가구총소득', 
-# '흡연자', '고위험음주여부', '스트레스인지_이분형', 당뇨병 의사진단 여부')
+# '흡연자', '고위험음주여부', '유산소실천여부', '스트레스인지_이분형', 
+# '당뇨병 의사진단 여부')
 df_004 <- df_003 %>% select(age, sex, edu_binary, marri_1, town_t, EC1_1, ainc_binary, 
                             smoker, dr_high, BP1_binary, DE1_dg)
 
@@ -210,6 +211,7 @@ df_fit_001 <- df_004 %>% mutate(
   ainc_binary = factor(ainc_binary, levels = c(0, 1), labels = c('미만', '이상')),
   smoker = factor(smoker, levels = c(0, 1), labels = c('비흡연자', '흡연자')),
   dr_high = factor(dr_high, levels = c(0, 1), labels = c('정상군', '고위험군')),
+  pa_aerobic = factor(pa_aerobic, levels = c(0, 1), labels = c('비실천', '실천')),
   BP1_binary = factor(BP1_binary, levels = c(0, 1), labels= c('적게인지', '많이인지')),
   DE1_dg = factor(DE1_dg, levels = c(0, 1), labels = c('없음', '있음'))
 ) %>% rename(
@@ -222,5 +224,6 @@ df_fit_001 <- df_004 %>% mutate(
   흡연자 = smoker,
   고위험음주여부 = dr_high,
   스트레스인지 = BP1_binary,
+  유산소실천여부 = pa_aerobic,
   당뇨병의사진단여부 = DE1_dg
 )
