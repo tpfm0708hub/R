@@ -175,7 +175,7 @@ df_003 <- df_003 %>% filter(BE3_92 != 9)
 # 지표생성 활용자료: "국민건강영양조사 제9기(2022-2024)
 df_003 <- df_003 %>% mutate(
   pa_aerobic = ifelse((sex == 1 & BD1_11 %in% c(5, 6) & BD2_1 %in% c(4, 5))|
-                   (sex == 2 & BD1_11 %in% c(5, 6) & BD2_1 %in% c(3, 4, 5)), 1, 0)
+                     (sex == 2 & BD1_11 %in% c(5, 6) & BD2_1 %in% c(3, 4, 5)), 1, 0)
 ) 
 
 # BP1(평소 스트레스 인지 정도) 빈도 확인
@@ -212,7 +212,7 @@ df_003 <- df_003 %>% mutate(
   mh_GAD_S = BP_GAD_1 + BP_GAD_2 + BP_GAD_3 + 
     BP_GAD_4 + BP_GAD_5 + BP_GAD_6 + 
     BP_GAD_7,
-    mh_GAD_binary = if_else(mh_GAD_S < 6, 0, 1)
+  mh_GAD_binary = if_else(mh_GAD_S < 6, 0, 1)
 )
 
 # 체질량지수(HE_BMI) 분포 확인 
@@ -232,45 +232,27 @@ df_003 <- df_003 %>% mutate(
 #df_003 %>% count(obesity_binary)
 
 # 고혈압 의사진단 여부(DI1_dg) 빈도 확인
-#df_003 %>% count(DI1_dg)
+df_003 %>% count(DI1_dg)
+#  DI1_dg     n 내용
+#   <dbl> <int>
+#1      0  9065 없음
+#2      1  1721 있음
 
 # 이상지질혈증 의사진단 여부(DI2_dg) 빈도 확인
-#df_003 %>% count(DI2_dg)
-
-# 주관적 체형인식(BO1) 빈도 확인
-# 설문: 현재 본인의 체형이 어떻다고 생각하십니까?
-df_003 %>% count(BO1)
-#    BO1     n  내용
-#  <dbl> <int>
-#1     1   218  매우 마른 편
-#2     2  1061  약간 마른 편
-#3     3  4069  보통
-#4     4  4094  약간 비만
-#5     5  1344  매우 비만
-
-# 주관적 체형인식 model1 및 model2 생성
-# model1 - 0(마른편): (BO1 응답 1, 2, 3), 1(뚱뚱한편): (BO1 응답: 4, 5)
-# model2 - 0(마른편): (BO1 응답 1, 2), 1(뚱뚱한편): (BO1 응답: 3, 4, 5)
-df_003 <- df_003 %>% mutate(
-  model1 = ifelse(BO1 %in% c(1,2,3), 0, 1),
-  model2 = ifelse(BO1 %in% c(1,2), 0, 1)
-)
-
-# model1 및 model2 빈도 확인
-df_003 %>% count(model1); df_003 %>% count(model2)
-#  model1     n 내용    |  model2     n 내용
-#   <dbl> <int>         |   <dbl> <int>
-#1      0  5348 비비만  |1      0  1279 마른편
-#2      1  5438 비만    |2      1  9507 보통이상
+df_003 %>% count(DI2_dg)
+#  DI2_dg     n 내용
+#   <dbl> <int>
+#1      0  8759 없음
+#2      1  2027 있음
 
 # 분석용 데이터프레임 생성('성별', '교육수준_이분형', 
 # '결혼여부', '동/읍면 구분', '경제활동 상태', '월평균 가구총소득', 
 # '흡연자', '고위험음주여부', '스트레스인지_이분형', 'GAD_이분형', 
 # '비만여부', '고혈압 의사진단 여부', '이상지질혈증 의사진단 여부', 
-# '당뇨병 의사진단 여부', 'model1', 'model2')
+# '당뇨병 의사진단 여부')
 df_004 <- df_003 %>% select(sex, edu_binary, marri_1, town_t, EC1_1, ainc_binary, 
                             smoker, dr_high, pa_aerobic, BP1_binary, mh_GAD_binary, 
-                            obesity_binary, DI1_dg, DI2_dg, DE1_dg, model1, model2)
+                            obesity_binary, DI1_dg, DI2_dg, DE1_dg)
 
 # 각 변수에 범주명 부여
 # 참고자료: 국민건강영양조사 제9기(2022-2024) 원시자료 이용지침서
@@ -289,9 +271,7 @@ df_fit_001 <- df_004 %>% mutate(
   obesity_binary = factor(obesity_binary, levels= c(0, 1), labels = c('비만전', '비만')),
   DI1_dg = factor(DI1_dg, levels = c(0, 1), labels = c('없음', '있음')),
   DI2_dg = factor(DI2_dg, levels = c(0, 1), labels = c('없음', '있음')),
-  DE1_dg = factor(DE1_dg, levels = c(0, 1), labels = c('없음', '있음')),
-  model1 = factor(model1, levels = c(0, 1), labels = c('비비만', '비만')),
-  model2 = factor(model2, levels = c(0, 1), labels = c('마른편', '보통이상')),
+  DE1_dg = factor(DE1_dg, levels = c(0, 1), labels = c('없음', '있음'))
 ) %>% rename(
   성별 = sex,
   교육수준 = edu_binary,
