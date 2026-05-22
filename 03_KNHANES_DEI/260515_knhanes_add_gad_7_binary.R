@@ -285,8 +285,8 @@ df_fit_001 <- df_004 %>% mutate(
   중위가구소득 = ainc_binary,
   흡연자 = smoker,
   고위험음주여부 = dr_high,
-  스트레스인지 = BP1_binary,
   유산소실천여부 = pa_aerobic,
+  스트레스인지 = BP1_binary,
   범불안장애위험 = mh_GAD_binary,
   당뇨병의사진단여부 = DE1_dg
 )
