@@ -30,17 +30,17 @@ df_non_diabetes_001 <- df_001 %>% filter(당뇨병의사진단여부=="없음") 
 #nrow(df_non_diabetes_001)
 
 # 변수 및 요인별 빈도수 정리 함수 생성
-summary_freq <- function(col_01){
-  df_freq_01 <- df_diabetes_001 %>% count(.data[[col_01]]) %>% mutate(
+summary_freq <- function(col_01, df_01, df_02, df_03){
+  df_freq_01 <- df_01 %>% count(.data[[col_01]]) %>% mutate(
                 당뇨경험집단 = paste0(comma(n, digits = 0), '(', round(n/sum(n)*100, 2), '%)')
                  ) %>% select(-n)
-  df_freq_02 <- df_non_diabetes_001 %>% count(.data[[col_01]]) %>% mutate(
+  df_freq_02 <- df_02 %>% count(.data[[col_01]]) %>% mutate(
                 일반집단 = paste0(comma(n, digits = 0), '(', round(n/sum(n)*100, 2), '%)')
                  ) %>% select(-n)
   df_freq_03 <- df_freq_01 %>% left_join(df_freq_02, by=col_01) %>% 
                 rename(요인 = all_of(col_01)) %>% mutate(변수명 = col_01) %>% 
                 select(변수명, 요인, 당뇨경험집단, 일반집단)
-  df_chidq_01 <- df_001 %>% select(all_of(col_01), 당뇨병의사진단여부) %>% table() %>%
+  df_chidq_01 <- df_03 %>% select(all_of(col_01), 당뇨병의사진단여부) %>% table() %>%
                  # pearson 카이제곱 적용
                  chisq.test(correct = FALSE) 
   df_chidq02 <- df_chidq_01 %>% tidy() %>% select(`X-squared`='statistic', `p-value` = `p.value`) %>%
