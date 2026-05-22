@@ -56,25 +56,18 @@ summary_freq <- function(col_01){
   return(df_fit_01)
 }
 
-# 각 변수별 교차분석 진행
-result_01 <- data.frame(rbind(
-  summary_freq('성별'),
-  summary_freq('연령구분'),
-  summary_freq('교육수준'),
-  summary_freq('결혼여부'),
-  summary_freq('거주지역'),
-  summary_freq('경제활동상태'),
-  summary_freq('중위가구소득'),
-  summary_freq('흡연자'),
-  summary_freq('고위험음주여부'),
-  summary_freq('유산소실천여부'),
-  summary_freq('스트레스인지'),
-  summary_freq('범불안장애위험'),
-  summary_freq('비만여부'),
-  summary_freq('고혈압의사진단여부'),
-  summary_freq('이상지질혈증의사진단여부')
-), check.names = FALSE)
+col_list_01 <- c(
+  '성별', '연령구분', '교육수준', '결혼여부', '거주지역',
+  '경제활동상태', '중위가구소득', '흡연자', '고위험음주여부',
+  '유산소실천여부', '스트레스인지', '범불안장애위험', '비만여부',
+  '고혈압의사진단여부', '이상지질혈증의사진단여부'
+)
 
+# 각 변수별 교차분석 진행
+result_01 <- data.frame(
+  map_dfr(col_list_01, function(x){
+    summary_freq(x, df_diabetes_001, df_non_diabetes_001, df_001)
+  }), check.names = FALSE)
 print(result_01)
 #                     변수명     요인 당뇨경험집단      일반집단 X-squared p-value
 #1                      성별     남자  455(56.45%) 4,146(41.55%)     67.68  < 0.01
