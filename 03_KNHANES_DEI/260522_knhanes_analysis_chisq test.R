@@ -41,7 +41,7 @@ summary_freq <- function(col_01, col_02,
                  ) %>% select(-n)
   df_freq_03 <- df_freq_01 %>% left_join(df_freq_02, by=col_01) %>% 
                 rename(요인 = all_of(col_01)) %>% mutate(변수명 = col_01) %>% 
-                select(변수명, 요인, group_01, group_02)
+                select(변수명, 요인, all_of(c(group_01, group_02)))
   df_chidq_01 <- df_03 %>% select(all_of(c(col_01, col_02))) %>% table() %>%
                  # pearson 카이제곱 적용
                  chisq.test(correct = FALSE) 
@@ -68,7 +68,9 @@ col_list_01 <- c(
 # 각 변수별 교차분석 진행
 result_01 <- data.frame(
   map_dfr(col_list_01, function(x){
-    summary_freq(x, '당뇨병의사진단여부', df_diabetes_001, df_non_diabetes_001, df_001)
+    summary_freq(x, '당뇨병의사진단여부', 
+                 '당뇨경험집단', '일반집단',
+                 df_diabetes_001, df_non_diabetes_001, df_001)
   }), check.names = FALSE)
 print(result_01)
 #                     변수명     요인 당뇨경험집단      일반집단 X-squared p-value
