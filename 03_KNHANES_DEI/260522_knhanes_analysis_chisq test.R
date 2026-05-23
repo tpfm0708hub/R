@@ -66,13 +66,13 @@ col_list_01 <- c(
 )
 
 # 각 변수별 교차분석 진행
-result_01 <- data.frame(
+result_chisq_01 <- data.frame(
   map_dfr(col_list_01, function(x){
     summary_freq(x, '당뇨병의사진단여부', 
                  '당뇨경험집단', '일반집단',
                  df_diabetes_001, df_non_diabetes_001, df_001)
   }), check.names = FALSE)
-print(result_01)
+print(result_chisq_01)
 #                     변수명     요인 당뇨경험집단      일반집단 X-squared p-value
 #1                      성별     남자  455(56.45%) 4,146(41.55%)     67.68  < 0.01
 #2                      성별     여자  351(43.55%) 5,832(58.45%)     67.68  < 0.01
