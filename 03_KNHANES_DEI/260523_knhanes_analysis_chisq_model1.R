@@ -131,6 +131,7 @@ result_chisq_03 <- data.frame(
                  df_non_diabetes_md1_fat, df_non_diabetes_md1_not, df_non_diabetes_001
                  )
     }), check.names = FALSE)
+print(result_chisq_03)
 #                     변수명     요인 체형인식_비만 체형인식_비비만 X-squared p-value
 #1                      성별     남자 2,055(41.72%)   2,091(41.39%)      0.11  > 0.05
 #2                      성별     여자 2,871(58.28%)   2,961(58.61%)      0.11  > 0.05
