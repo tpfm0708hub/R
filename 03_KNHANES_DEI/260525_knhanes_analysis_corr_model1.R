@@ -167,8 +167,8 @@ summary_cor <- function(df_01, col_01){
 
 # model1에 따른 변수별 상관분석 진행
 # 당뇨경험집단
-cor_df_non_diabetes_md1_fat<-summary_cor(df_diabetes_001, 'model1')
-print(data.frame(cor_df_non_diabetes_md1_fat) %>% select(1))
+cor_df_diabetes_md1_fat<-summary_cor(df_diabetes_001, 'model1')
+print(data.frame(cor_df_diabetes_md1_fat) %>% select(1))
 #                          model1
 #model1                       1**
 #성별                     -0.11**
