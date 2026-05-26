@@ -136,8 +136,31 @@ library(psych)# corr.test()
 
 summary_cor <- function(df_01, col_01){
   df_02 <- df_01[, c(col_01, col_list_01)] %>%
+           mutate(
+             성별 = as.numeric(ifelse(성별 == '남자', 0, 1)),
+             교육수준 = as.numeric(ifelse(교육수준 == '고졸이하', 0, 1)),
+             결혼여부 = as.numeric(ifelse(결혼여부=='미혼', 0, 1)),
+             거주지역 = as.numeric(ifelse(거주지역=='동', 0, 1)),
+             경제활동상태 = as.numeric(ifelse(경제활동상태=='아니요', 0, 1)),
+             중위가구소득 = as.numeric(ifelse(중위가구소득=='미만', 0, 1)),
+             흡연자 = as.numeric(ifelse(흡연자=='비흡연자', 0, 1)),
+             고위험음주여부 = as.numeric(ifelse(고위험음주여부=='정상군', 0, 1)),
+             유산소실천여부 = as.numeric(ifelse(유산소실천여부=='비실천', 0, 1)),
+             스트레스인지 = as.numeric(ifelse(스트레스인지=='적게인지', 0, 1)),
+             범불안장애위험 = as.numeric(ifelse(범불안장애위험=='양호', 0, 1)),
+             비만여부 = as.numeric(ifelse(비만여부=='비만전', 0, 1)),
+             고혈압의사진단여부 = as.numeric(ifelse(고혈압의사진단여부=='없음', 0, 1)),
+             이상지질혈증의사진단여부 = as.numeric(ifelse(이상지질혈증의사진단여부=='없음', 0, 1)),
+             연령구분 = as.numeric(ifelse(연령구분=='45이하', 0, 1)),
+             )
+  if (col_01 == 'model1'){
+    df_02 <- df_02 %>% mutate(model1 = as.numeric(ifelse(model1=='비비만', 0, 1)))
+  } else if (col_01 == 'model2'){
+    df_02 <- df_02 %>% mutate(model2 = as.numeric(ifelse(model2=='마른편', 0, 1)))
+  }
+  
     # 상관분석 진행을 위해 숫자형으로 변환
-    mutate(across(everything(), ~as.numeric(as.factor(.))))
+#    mutate(across(everything(), ~as.numeric(as.factor(.))))
   
   # corr.test(): 상관분석 진행행
   # suppressWarnings(): 한글 열 이름으로 인한 경고문 처리
@@ -164,10 +187,9 @@ summary_cor <- function(df_01, col_01){
 
   return(df_result_02)}
 
-
 # model1에 따른 변수별 상관분석 진행
 # 당뇨경험집단
-cor_df_diabetes_md1_fat <- summary_cor(df_diabetes_001, 'model1')
+cor_df_diabetes_md1_fat<-summary_cor(df_diabetes_001, 'model1')
 print(data.frame(cor_df_diabetes_md1_fat) %>% select(1))
 #                          model1
 #model1                       1**
@@ -188,7 +210,7 @@ print(data.frame(cor_df_diabetes_md1_fat) %>% select(1))
 #이상지질혈증의사진단여부 -0.09**
 
 # 일반집단
-cor_df_non_diabetes_md1_not <- summary_cor(df_non_diabetes_001, 'model1')
+cor_df_non_diabetes_md1_not <-summary_cor(df_non_diabetes_001, 'model1')
 print(data.frame(cor_df_non_diabetes_md1_not) %>% select(1))
 #                          model1
 #model1                       1**
