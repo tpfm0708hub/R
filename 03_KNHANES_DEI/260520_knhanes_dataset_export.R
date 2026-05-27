@@ -333,10 +333,12 @@ df_003 <- df_003 %>% mutate(age_binary = if_else(age >= 46, 1, 0))
 # '결혼여부', '동/읍면 구분', '경제활동 상태', '월평균 가구총소득', 
 # '흡연자', '고위험음주여부', '유산소신체활동여부', '스트레스인지_이분형',
 # 'GAD_이분형', '비만여부', '고혈압 의사진단 여부', '이상지질혈증 의사진단 여부', 
-# '연령구분', '당뇨병 의사진단 여부', 'model1', 'model2')
+# '연령구분', '당뇨병 의사진단 여부', 'model1', 'model2'
+# '건강설문-검진조사 가중치')
 df_004 <- df_003 %>% select(sex, edu_binary, marri_1, town_t, EC1_1, ainc_binary, 
                             smoker, dr_high, pa_aerobic, BP1_binary, mh_GAD_binary, 
-                            obesity_binary, DI1_dg, DI2_dg, age_binary, DE1_dg, model1, model2)
+                            obesity_binary, DI1_dg, DI2_dg, age_binary, DE1_dg, model1, model2,
+                            wt_itvex)
 
 # 각 변수에 범주명 부여
 # 참고자료: 국민건강영양조사 제9기(2022-2024) 원시자료 이용지침서
