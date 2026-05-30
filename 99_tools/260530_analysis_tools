@@ -1,0 +1,141 @@
+#summary_freq()  : 교차분석 진행 함수 생성
+#summary_cor()   : 싱관분석 진행 함수 생성
+#set_df()        : 분석용 데이터 프레임 생성(factor)
+#summary_vif()   : 다중공선성 진행 함수 생성
+#summary_glm()   : 로지스틱 회귀분석 진행 함수 생성
+
+rm(list=ls())
+library(fs)
+library(car)# vif()
+library(survey)#  svydesign
+library(psych)# corr.test()
+library(vroom)
+library(broom)# tidy()
+library(stringr)
+library(tidyverse)
+library(formattable)
+
+# 교차분석 진행 함수 생성
+summary_freq <- function(col_01, col_02, 
+                         group_01, group_02,
+                         df_01, df_02, df_03){
+  df_freq_01 <- df_01 %>% count(.data[[col_01]]) %>% mutate(
+                !!group_01 := paste0(comma(n, digits = 0), '(', round(n/sum(n)*100, 2), '%)')
+                 ) %>% select(-n)
+  df_freq_02 <- df_02 %>% count(.data[[col_01]]) %>% mutate(
+                !!group_02 := paste0(comma(n, digits = 0), '(', round(n/sum(n)*100, 2), '%)')
+                 ) %>% select(-n)
+  df_freq_03 <- df_freq_01 %>% left_join(df_freq_02, by=col_01) %>% 
+                rename(요인 = all_of(col_01)) %>% mutate(변수명 = col_01) %>% 
+                select(변수명, 요인, all_of(c(group_01, group_02)))
+  df_chidq_01 <- df_03 %>% select(all_of(c(col_01, col_02))) %>% table() %>%
+                 # pearson 카이제곱 적용
+                 chisq.test(correct = FALSE) 
+  df_chidq02 <- df_chidq_01 %>% tidy() %>% select(`X-squared`='statistic', `p-value` = `p.value`) %>%
+                 mutate(
+                   `X-squared` = sprintf('%.2f', `X-squared`),
+                   `p-value` = case_when(
+                   `p-value` >= 0.05 ~ '> 0.05',
+                   `p-value` >= 0.01 ~ '< 0.05',
+                   TRUE ~ '< 0.01'
+                   ))
+  df_fit_01 <- bind_cols(df_freq_03, df_chidq02)
+  
+  return(df_fit_01)
+}
+
+col_list_01 <- c(
+
+)
+
+# 변수별 교차분석 진행
+result_chisq_01 <- data.frame(
+  map_dfr(col_list_01, function(x){
+    summary_freq(x, , 
+                 , ,
+                 , , )
+  }), check.names = FALSE)
+
+
+# 싱관분석 진행 함수 생성
+summary_cor <- function(df_01, col_01){
+  # 숫자형 변환
+  df_02 <- df_01[, c(col_01, col_list_01)] %>%
+           mutate(
+
+             )
+  if (col_01 == ''){
+    df_02 <- df_02 %>% mutate( = as.numeric(ifelse(=='', 0, 1)))
+  } else if (col_01 == ''){
+    df_02 <- df_02 %>% mutate( = as.numeric(ifelse(=='', 0, 1)))
+  }
+  
+    # 상관분석 진행을 위해 숫자형으로 변환
+
+  # corr.test(): 상관분석 진행
+  # suppressWarnings(): 한글 열 이름으로 인한 경고문 처리
+  df_03 <- suppressWarnings(corr.test(df_02))
+  
+  df_r_01 <- round(df_03$r, 2)
+  df_p_01 <- df_03$p
+  
+  df_p_02 <- ifelse(
+    df_p_01 < 0.01, '**',
+    ifelse(df_p_01 < 0.05, '*', '')
+    )
+  
+  df_result_01 <- matrix(
+    paste0(df_r_01, df_p_02),
+    nrow = nrow(df_r_01),
+    ncol = ncol(df_p_01)
+  )
+  
+  rownames(df_result_01) <- rownames(df_r_01)
+  colnames(df_result_01) <- colnames(df_r_01)
+  
+  df_result_02 <- data.frame(df_result_01)
+
+  return(df_result_02)}
+
+
+# 로지스틱 다중공선성 진행
+# 분석용 데이터 프레임 생성
+set_df <- function(df_01, col_01){
+  # 범주형 변환
+  df_02 <- df_01 %>% mutate(
+
+  )
+  
+  if(col_01 == '') {
+    df_02 <-  df_02 %>% mutate( = factor(, levels = c('', '')))
+  } else if(col_01 == '') {
+    df_02 <-  df_02 %>% mutate( = factor(, levels = c('', '')))
+  }
+  return(df_02)
+}
+
+# 다중공선성 진행 함수 생성(다중공선성 기준: VIF 5이상)
+summary_vif <- function(df_01, col_01){
+  df_02 <- formula(paste(col_01 ,'~', paste(col_list_01, collapse = ' + ')))  
+  sum_cov_01 <- glm(df_02, data = df_01, family = quasibinomial(link = 'logit'), weights = )
+  car::vif(sum_cov_01)
+}
+
+# 로지스틱 회귀분석 진행 함수 생성
+summary_glm <- function(df_01, col_01){
+    # 로지스틱 회귀분석: 가중치 반영
+    md_svy <- svydesign(ids = ~1, weights = ~, data = df_01)
+    df_02 <- formula(paste(col_01, '~', paste(col_list_01[-match('', col_list_01)], collapse = '+')))
+    
+    sum_glm_01 <- svyglm(df_02, design = md_svy, family = quasibinomial(link = 'logit'))
+    sum_glm_02 <- tidy(sum_glm_01) %>% mutate(
+                  OR = exp(estimate),
+                  p_value = case_when(
+                    p.value < 0.001 ~ '< 0.001',
+                    p.value < 0.01  ~ sprintf('%.3f', p.value),
+                    TRUE ~ sprintf('%.2f', p.value)),
+                  CI_high = exp(estimate + 1.96 * std.error),
+                  CI_low = exp(estimate - 1.96 * std.error)
+                  ) %>% select('Independent variables' = term, OR, p_value, CI_high, CI_low)
+    return(sum_glm_02)
+}
