@@ -48,7 +48,7 @@ df_002 %>% select(HE_sbp3) %>% describe(.)
 #        vars     n   mean   sd median trimmed   mad min max range skew kurtosis   se
 #HE_sbp3    1 16964 119.47 16.2    118   118.4 14.83  70 237   167 0.83     1.58 0.12
 
-# '2차 수축기 혈압' 및  '2차 이완기 혈압' 결측 처리
+# '2차 수축기 혈압' 및  '3차 수축기 혈압' 결측 처리
 df_003 <- df_002 %>% filter(!is.na(HE_sbp2) & !is.na(HE_sbp3))
 
 # 3)'3차 수축기 혈압(HE_sbp3)' 및  '3차 이완기 혈압(HE_dbp3)' 변수 분포 확인
