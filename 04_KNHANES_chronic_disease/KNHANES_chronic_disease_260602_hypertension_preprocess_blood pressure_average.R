@@ -54,8 +54,8 @@ df_003 <- df_002 %>% filter(!is.na(HE_sbp2) & !is.na(HE_sbp3))
 
 # 최종 수축기 혈압(cal_sbp) 및 최종 이완기 혈압(cal_dbp) 생성
 df_003 <- df_003 %>% mutate(
-  cal_sbp = rowSums(across(c(HE_sbp2, HE_sbp3))) / 2,
-  cal_dbp = rowSums(across(c(HE_dbp2, HE_dbp3))) / 2
+  cal_sbp = rowMeans(across(c(HE_sbp2, HE_sbp3))),
+  cal_dbp = rowMeans(across(c(HE_dbp2, HE_dbp3)))
 )
 
 # 국민건강양양조사 내 기존 생성 변수(HE_sbp, HE_dbp)와 계산값 비교
