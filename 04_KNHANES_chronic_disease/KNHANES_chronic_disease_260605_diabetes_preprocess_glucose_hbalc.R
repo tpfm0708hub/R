@@ -42,7 +42,11 @@ df_002 <- df_001 %>% filter(!is.na(DE1_dg) & !DE1_dg %in% c(8, 9))
 
 # 2) '공복혈당'(HE_glu) 및 3) '당화혈색소'(HE_HbA1c) 변수 분포 확인
 df_002 %>% select(HE_glu) %>% describe(.)
+#       vars     n  mean    sd median trimmed   mad min max range skew kurtosis   se
+#HE_glu    1 16674 101.4 22.67     96   97.71 10.38  47 460   413 4.22    30.55 0.18
 df_002 %>% select(HE_HbA1c) %>% describe(.)
+#         vars     n mean   sd median trimmed  mad min  max range skew kurtosis   se
+#HE_HbA1c    1 16649 5.64 0.78    5.5    5.52 0.44 3.3 17.6  14.3 3.55    23.49 0.01
 
 # '공복혈당' 및 '당화혈색소' 결측 처리
 df_003 <- df_002 %>% filter(!is.na(HE_glu) & !is.na(HE_HbA1c))
