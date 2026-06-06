@@ -87,7 +87,7 @@ df_003 <- df_003 %>% mutate(BP_HT = case_when(
 
 # 전체집단 고혈압 유병여부(BP_HT) 빈도 확인
 prop.table(df_003 %>% count(BP_HT))
-#         BP_HT         n
+# BP_HT         n
 #1 0 0.4996464
 #2 1 0.1364172
 #3 2 0.2263406
@@ -95,7 +95,7 @@ prop.table(df_003 %>% count(BP_HT))
 
 # 고혈압 경험자(의사진단자) 중 고혈압 유병여부 빈도(BP_HT) 확인
 prop.table(df_003 %>% filter(DI1_dg == 1) %>% count(BP_HT))
-#         BP_HT         n
+# BP_HT         n
 #1 0 0.2675367
 #2 1 0.2026917
 #3 2 0.3026101
