@@ -110,7 +110,7 @@ df_004 %>% count(BS12_2)
 
 # 현재 흡연여부(current_smoke) 변수 생성
 df_004 <- df_004 %>% mutate(
-  current_smoke = case_when(
+  current_smoking = case_when(
     # 현재흡연자(2): 담배관련 '매일피움'이거나 '가끔피움', 현재 사용여부 '네' 응답에 해당
     BS3_1 %in% c(1, 2) | BS12_47 %in% c(1, 2) | BS12_2 == 1~ 2,
     # 과거흡연자(1): 담배관련 '과거엔 피웠으나, 현재 피우지 않음' 응답에 해당
@@ -121,7 +121,7 @@ df_004 <- df_004 %>% mutate(
   )
 
 # 현재 흡연여부 범주별 빈도 확인
-df_004 %>% count(current_smoke)
+df_004 %>% count(current_smoking)
 #  current_smoke     n  내용
 #1             0 10034  비흡연자
 #2             1  3488  과거흡연자
