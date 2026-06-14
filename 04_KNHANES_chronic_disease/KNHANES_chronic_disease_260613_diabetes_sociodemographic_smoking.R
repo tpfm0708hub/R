@@ -108,7 +108,7 @@ df_004 %>% count(BS12_2)
 #2      2   815 아니요
 #3      8 15235 모름, 무응답
 
-# 현재 흡연여부(current_smoke) 변수 생성
+# 현재 흡연여부(current_smoking) 변수 생성
 df_004 <- df_004 %>% mutate(
   current_smoking = case_when(
     # 현재흡연자(2): 담배관련 '매일피움'이거나 '가끔피움', 현재 사용여부 '네' 응답에 해당
