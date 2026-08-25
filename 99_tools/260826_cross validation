@@ -1,0 +1,28 @@
+var_001 <- function(col_01){
+  df_01 <- df_001 %>% filter(diabetes_group == 0) %>% count({{col_01}}) %>% rename(
+    'norm_dim' = 'n'
+    )
+  df_02 <- df_001 %>% filter(diabetes_group == 1) %>% count({{col_01}}) %>% rename(
+    'diabetes_dim' = 'n'
+    )
+  df_03 <- df_01 %>% left_join(df_02, by = join_by({{col_01}}))
+  
+  chisq_01 <- df_03 %>% select(2, 3) %>% chisq.test()
+  chisq_02 <- chisq_01 %>% tidy() %>% select(
+    `X-squared` = statistic, `p-value` = `p.value`) %>% mutate(
+      `X-squared` = sprintf('%.2f', `X-squared`),
+      `p-value` = case_when(
+        `p-value` > 0.05 ~ '> 0.05',
+        `p-value` > 0.01 ~ '< 0.05',
+        TRUE ~ '< 0.01'
+      ))
+  df_04 <- df_03 %>% mutate(
+    total = norm_dim + diabetes_dim,
+    perc_norm = norm_dim/total,
+    perc_diabetes = diabetes_dim/total,
+    norm = paste0(norm_dim, '(', round(perc_norm, 2), '%)'),
+    diabetes = paste0(diabetes_dim, '(', round(perc_diabetes, 2), '%)')
+  ) %>% select(1, 7, 8)
+  df_05 <- df_04 %>% cbind(chisq_02)
+  return(df_05)
+}
